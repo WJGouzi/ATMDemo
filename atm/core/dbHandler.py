@@ -68,7 +68,7 @@ def file_execute(sql, **kwargs):
                     print('account data is : ' , account_data)
                     return account_data
             else:
-                exit("\033[31;1mAccount [%s] does not exist!\033[0m" % val )
+                exit("\033[31;1mAccount [%s] does not exist!\033[0m" % val)
 
     elif sql_list[0].startswith("update") and len(sql_list)> 1:#has where clause
         column, val = sql_list[1].strip().split("=")

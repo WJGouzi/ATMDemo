@@ -27,6 +27,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from core import auth
 from core.auth import loginAuthentic
 from core import  accountsInfo
+from core import transaction
 
 '''
 用户的信息
@@ -67,8 +68,8 @@ def interactionWithUserAccout(userAccount):
     menu = u'''
         ------- wangjun Bank ---------
         \033[32;1m1.  账户信息
-        2.  还款(功能已实现)
-        3.  取款(功能已实现)
+        2.  还款
+        3.  取款
         4.  转账
         5.  账单
         6.  退出
@@ -77,7 +78,7 @@ def interactionWithUserAccout(userAccount):
     choiceMenu = {
         '1': showUserAccountInfo,
         '2': repay,
-        '3': '',
+        '3': withdrawingMoney,
         '4': '',
         '5': '',
         '6': '',
@@ -102,5 +103,44 @@ def showUserAccountInfo(userAccountData):
 
 @loginAuthentic
 def repay(userAccountData):
+    '''
+    还款的逻辑
+    :param userAccountData: 用户的账户信息
+    :return:
+    '''
     currentUserBasicInfo = accountsInfo.checkUserCurrentBasicInfo(userData['userID'])
-    print(currentUserBasicInfo)
+    currentMoney = '''
+        _________________ basic info ________________________
+        信用额度 : %s 
+        可用余款 : %s ''' % (currentUserBasicInfo['credit'], currentUserBasicInfo['balance'])
+    print(currentMoney)
+
+    backFlag = False
+
+    while not backFlag:
+        repayMoney = input('\033[32;1m请输入还款的金额:\033[0m').strip()
+        if len(repayMoney) > 0 and repayMoney.isdigit():
+            '''
+            输入金额有效
+            '''
+            newUserInfo = transaction.transactionAction(currentUserBasicInfo, 'repay', repayMoney)
+            if newUserInfo:
+                print('''\033[32;1m现在账户的余额为:%s\033[0m''' % (newUserInfo['balance']))
+        elif repayMoney == 'b':
+            backFlag = True
+        else:
+            print('\033[31;1m[%s] 输入的数据无效 \033[0m' % repayMoney)
+
+
+def withdrawingMoney(userData):
+    '''
+    取款的逻辑
+    :param userData: 用户的账户信息
+    :return:
+    '''
+    pass
+
+
+
+
+

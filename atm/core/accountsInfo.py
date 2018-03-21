@@ -36,3 +36,13 @@ def checkUserCurrentBasicInfo(userId):
     data = dbExecute("select * from accounts where account=%s" % userId)
     return data
 
+
+def updateUserCurrentBasicInfo(userData):
+    '''
+    更新当前用户的一些信息
+    :param userData: 用户的信息
+    :return:
+    '''
+    dbExcute = dbHandler.dbHandler()
+    dbExcute("update accounts where account=%s" % userData['id'], account_data=userData)
+    return True

@@ -36,3 +36,13 @@ DATABASE = {
     'name':'accounts',
     'path': "%s/db" % basePath
 }
+
+
+
+# 交易的类型
+TRANSACTION_TYPE = {
+    'repay': {'action': 'plus', 'interest': 0},         # 还款
+    'withdraw': {'action': 'minus', 'interest': 0.05},  # 取款
+    'transfer': {'action': 'minus', 'interest': 0.05},  # 转账
+    'consume': {'action': 'minus', 'interest': 0},      # 消费
+}
