@@ -19,6 +19,13 @@ __create time__ = '2018/3/20'
                ┃┫┫    ┃┫┫
                ┗┻┛    ┗┻┛
 """
+import os
+import sys
+import time
+
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
+from core import dbHandler
 
 def userLoginAction(userAccount):
     '''
@@ -28,13 +35,17 @@ def userLoginAction(userAccount):
     print(userAccount)
     retryCount = 0
     while retryCount < 3 and userAccount['isAuthentic'] is not True:
-        user = input('请输入账号:').strip()
-        password = input('请输入密码:').strip()
-        print('user is : %s, password is %s' % (user, password))
+        user = input('\033[32;1m请输入账号:\033[0m').strip()
+        password = input('\033[32;1m请输入密码:\033[0m').strip()
         auth = userAuthenticAction(user, password)
-
+        if auth: # 时间也验证通过了
+            userAccount['isAuthentic'] = True
+            userAccount['userID'] = user
+            return auth
+        retryCount += 1
     else:
         print('您输入的次数过多')
+        exit()
 
 def userAuthenticAction(userId, userPassword):
     '''
@@ -44,6 +55,31 @@ def userAuthenticAction(userId, userPassword):
     :return: 如果验证成功就讲用户对象进行返回，如果验证失败就返回None
     '''
     # 从文件中或者是数据库中读取数据进行验证
+    dbHandlerWithSQL = dbHandler.dbHandler()
+    data = dbHandlerWithSQL("select * from accounts where account=%s" % userId)
+
+    if data['password'] == userPassword: # 说明用户的信息已经被找到了
+        '''
+        用户的时间有没有过期这些也是需要进行验证
+        '''
+        expireDateStamp = time.mktime(time.strptime(data['expire_date'], '%Y-%m-%d'))
+        if time.time() > expireDateStamp:
+            print("\033[31;1mAccount [%s] has expired,please contact the back to get a new card!\033[0m" % userId)
+        else:
+            return data
+    else:
+        print("\033[31;1mAccount ID or password is incorrect!\033[0m")
 
 
-
+def loginAuthentic(func):
+    '''
+    验证用户的登录情况
+    :param func:
+    :return:
+    '''
+    def wrapper(*args,**kwargs):
+        if args[0].get('isAuthentic'):
+            return func(*args, **kwargs)
+        else:
+            exit("User is not authenticated.")
+    return wrapper
