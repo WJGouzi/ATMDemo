@@ -91,7 +91,7 @@ def interactionWithUserAccout(userAccount):
         if choice in choiceMenu:
             choiceMenu[choice](userAccount)
         else:
-            print("\033[31;1mOption does not exist!\033[0m")
+            print("\033[31;1m 选项不存在! \033[0m")
 
 
 ########################### 用户的一些交互的行为 #####################################
@@ -99,7 +99,13 @@ def interactionWithUserAccout(userAccount):
 def showUserAccountInfo(userAccountData):
 
     print("\033[32;1m---------User info----------------\033[0m")
-    print(userData)
+    for (key, value) in userData.items():
+        if key == 'userData':
+            for (infoKey, infoValue) in userData['userData'].items():
+                print(infoKey, '---', infoValue)
+        else:
+            print(key, '---', value)
+
 
 @loginAuthentic
 def repay(userAccountData):
@@ -108,39 +114,82 @@ def repay(userAccountData):
     :param userAccountData: 用户的账户信息
     :return:
     '''
-    currentUserBasicInfo = accountsInfo.checkUserCurrentBasicInfo(userData['userID'])
+    currentUserBasicInfo = accountsInfo.checkUserCurrentBasicInfo(userAccountData['userID'])
     currentMoney = '''
-        _________________ basic info ________________________
-        信用额度 : %s 
-        可用余款 : %s ''' % (currentUserBasicInfo['credit'], currentUserBasicInfo['balance'])
+        \033[32;1m_________________ basic info ________________________
+        信用额度 : %.2f 
+        可用余款 : %.2f \033[0m''' % (float(currentUserBasicInfo['credit']), float(currentUserBasicInfo['balance']))
     print(currentMoney)
 
     backFlag = False
 
     while not backFlag:
-        repayMoney = input('\033[32;1m请输入还款的金额:\033[0m').strip()
-        if len(repayMoney) > 0 and repayMoney.isdigit():
+        repayMoney = input('''\033[32;1m请输入还款的金额(返回上级菜单请按【b】):\033[0m''').strip()
+        if len(repayMoney) > 0 and (repayMoney.isdigit() or isJudgeFloat(repayMoney)):
             '''
             输入金额有效
             '''
             newUserInfo = transaction.transactionAction(currentUserBasicInfo, 'repay', repayMoney)
             if newUserInfo:
-                print('''\033[32;1m现在账户的余额为:%s\033[0m''' % (newUserInfo['balance']))
+                print('''\033[32;1m现在账户的余额为:%.2f\033[0m''' % float(newUserInfo['balance']))
         elif repayMoney == 'b':
             backFlag = True
         else:
             print('\033[31;1m[%s] 输入的数据无效 \033[0m' % repayMoney)
 
 
-def withdrawingMoney(userData):
+def withdrawingMoney(userAccountData):
     '''
     取款的逻辑
     :param userData: 用户的账户信息
     :return:
     '''
-    pass
+    currentUserBasicInfo = accountsInfo.checkUserCurrentBasicInfo(userAccountData['userID'])
+    currentMoney = '''
+        \033[32;1m_________________ basic info ________________________
+        信用额度 : %.2f 
+        可用余款 : %.2f \033[0m''' % (float(currentUserBasicInfo['credit']), float(currentUserBasicInfo['balance']))
+    print(currentMoney)
+    backFlag = False
+    while not backFlag:
+        withdrawMoney = input('''\033[32;1m请输入取款的金额(返回上级菜单请按【b】):\033[0m''').strip()
+        print(withdrawMoney.isdigit(), withdrawMoney.isdecimal())
+        if len(withdrawMoney) > 0 and (withdrawMoney.isdigit() or isJudgeFloat(withdrawMoney)):
+            '''
+            输入的金额是有效的
+            '''
+            newUserInfo = transaction.transactionAction(currentUserBasicInfo, 'withdraw', withdrawMoney)
+            if newUserInfo:
+                print('''\033[32;1m现在账户的余额为:%.2f\033[0m''' % float(newUserInfo['balance']))
+        elif withdrawMoney == 'b':
+            backFlag = True
+        else:
+            print('\033[31;1m[%s] 输入的数据无效 \033[0m' % withdrawMoney)
+        pass
 
 
 
 
-
+def isJudgeFloat(inputValue):
+    '''
+    判断输入的内容是否为一个小数
+    :param inputValue: 输入的内容
+    :return: 返回True表示为小数，False则不是小数
+    '''
+    str1 = str(inputValue)
+    if str1.count('.') > 1:  # 判断小数点是不是大于1
+        return False
+    elif str1.isdigit():
+        return False  # 判断是不是整数
+    else:
+        new_str = str1.split('.')  # 按小数点分割字符
+        frist_num = new_str[0]  # 取分割完之后这个list的第一个元素
+        if frist_num.count('-') > 1:  # 判断负号的格数，如果大于1就是非法的
+            return False
+        else:
+            frist_num = frist_num.replace('-', '')  # 把负号替换成空
+    if frist_num.isdigit() and new_str[1].isdigit():
+        # 如果小数点两边都是整数的话，那么就是一个小数
+        return True
+    else:
+        return False

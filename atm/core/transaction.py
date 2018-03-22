@@ -40,7 +40,10 @@ def transactionAction(userData, dealType, amount, **kwargs):
     '''
     amount = float(amount)
     if dealType in settings.TRANSACTION_TYPE:
-        interest = amount * float(settings.TRANSACTION_TYPE[dealType]['interest'])
+        if amount > 1000:  # 大于1000以上的才有利息计算
+            interest = amount * float(settings.TRANSACTION_TYPE[dealType]['interest'])
+        else:
+            interest = 0
         oldMoneyAmount = userData['balance']
         if settings.TRANSACTION_TYPE[dealType]['action'] == 'plus':
             newMoneyAmount = oldMoneyAmount + amount + interest
@@ -48,7 +51,10 @@ def transactionAction(userData, dealType, amount, **kwargs):
             newMoneyAmount = oldMoneyAmount - amount - interest
             if newMoneyAmount < 0:
                 print('''\033[31;1m您的信用额度为: [%s], 不足以进行此次[-%s]的交易, 您可用的金额为:[%s]''' % (userData['credit'], (amount + interest), oldMoneyAmount))
-            return
+                return
+            else:
+                if interest > 0:
+                    print("\033[31;1m交易中扣除了相应的手续费为:[%.2f]\033[0m" % interest)
         userData['balance'] = newMoneyAmount
         accountsInfo.updateUserCurrentBasicInfo(userData)
         return userData
