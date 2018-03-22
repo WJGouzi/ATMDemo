@@ -56,7 +56,7 @@ def file_execute(sql, **kwargs):
     print(sql,db_path)
     sql_list = sql.split("where")
     print(sql_list)
-    if sql_list[0].startswith("select") and len(sql_list) > 1: #has where clause
+    if sql_list[0].startswith("select") and len(sql_list) > 1:  # has where clause
         column,val = sql_list[1].strip().split("=")
 
         if column == 'account':
@@ -70,7 +70,7 @@ def file_execute(sql, **kwargs):
             else:
                 exit("\033[31;1mAccount [%s] does not exist!\033[0m" % val)
 
-    elif sql_list[0].startswith("update") and len(sql_list)> 1:#has where clause
+    elif sql_list[0].startswith("update") and len(sql_list) > 1:  # has where clause
         column, val = sql_list[1].strip().split("=")
         if column == 'account':
             account_file = "%s/%s.json" % (db_path, val)

@@ -57,6 +57,13 @@ def transactionAction(userData, dealType, amount, **kwargs):
                     print("\033[31;1m交易中扣除了相应的手续费为:[%.2f]\033[0m" % interest)
         userData['balance'] = newMoneyAmount
         accountsInfo.updateUserCurrentBasicInfo(userData)
+
+
+        if dealType == 'transfer' and kwargs:
+            print('kwargs', kwargs)
+            otherOldMoneyAmount = kwargs['balance']
+            kwargs['balance'] = otherOldMoneyAmount + amount
+            accountsInfo.updateUserCurrentBasicInfo(kwargs)
         return userData
     else:
         print("\033[31;1m交易类型 : [%s] 不存在!\033[0m" % dealType)

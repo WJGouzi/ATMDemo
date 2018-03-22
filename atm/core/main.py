@@ -28,6 +28,8 @@ from core import auth
 from core.auth import loginAuthentic
 from core import  accountsInfo
 from core import transaction
+from core import dbHandler
+
 
 '''
 用户的信息
@@ -79,9 +81,9 @@ def interactionWithUserAccout(userAccount):
         '1': showUserAccountInfo,
         '2': repay,
         '3': withdrawingMoney,
-        '4': '',
+        '4': transferWithAccout,
         '5': '',
-        '6': '',
+        '6': logOutAction,
     }
 
     exitFlag = False
@@ -138,6 +140,7 @@ def repay(userAccountData):
             print('\033[31;1m[%s] 输入的数据无效 \033[0m' % repayMoney)
 
 
+@loginAuthentic
 def withdrawingMoney(userAccountData):
     '''
     取款的逻辑
@@ -153,7 +156,6 @@ def withdrawingMoney(userAccountData):
     backFlag = False
     while not backFlag:
         withdrawMoney = input('''\033[32;1m请输入取款的金额(返回上级菜单请按【b】):\033[0m''').strip()
-        print(withdrawMoney.isdigit(), withdrawMoney.isdecimal())
         if len(withdrawMoney) > 0 and (withdrawMoney.isdigit() or isJudgeFloat(withdrawMoney)):
             '''
             输入的金额是有效的
@@ -167,7 +169,43 @@ def withdrawingMoney(userAccountData):
             print('\033[31;1m[%s] 输入的数据无效 \033[0m' % withdrawMoney)
         pass
 
+@loginAuthentic
+def transferWithAccout(userAccountData):
+    currentUserBasicInfo = accountsInfo.checkUserCurrentBasicInfo(userAccountData['userID'])
+    currentMoney = '''
+            \033[32;1m_________________ basic info ________________________
+            信用额度 : %.2f 
+            可用余款 : %.2f \033[0m''' % (float(currentUserBasicInfo['credit']), float(currentUserBasicInfo['balance']))
+    print(currentMoney)
+    otherUserID = input('\033[32;1m请输入转账对方的账号:\033[0m').strip()
+    dbHandlerWithSQL = dbHandler.dbHandler()
+    otherData = dbHandlerWithSQL("select * from accounts where account=%s" % otherUserID)
 
+    if len(otherUserID) > 0 and otherUserID.isdigit():
+        transferMoney = input('''\033[32;1m请输入转账的金额:\033[0m''').strip()
+        if len(transferMoney) > 0 and (transferMoney.isdigit() or isJudgeFloat(transferMoney)):
+            newUserInfo = transaction.transactionAction(currentUserBasicInfo, 'transfer', transferMoney, **otherData)
+            if newUserInfo:
+                print('''\033[32;1m现在账户的余额为:%.2f\033[0m''' % float(newUserInfo['balance']))
+            else:
+                print('\033[31;1m[%s] 输入的数据无效 \033[0m' % transferMoney)
+    else:
+        print('\033[32;1m请输入的类型有误!\033[0m')
+
+
+
+@loginAuthentic
+def logOutAction(userAccountData):
+    '''
+    退出登录的操作
+    :param userAccountData: 用户的账户信息
+    '''
+    isAuthentic = userAccountData['isAuthentic']
+    if isAuthentic == True:
+        userData['isAuthentic'] = False
+        currentUserBasicInfo = accountsInfo.checkUserCurrentBasicInfo(userAccountData['userID'])
+        userData['userData'] = currentUserBasicInfo
+        exit()
 
 
 def isJudgeFloat(inputValue):
