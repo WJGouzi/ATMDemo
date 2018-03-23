@@ -25,7 +25,6 @@
 """
 from core import dbHandler
 
-
 def checkUserCurrentBasicInfo(userId):
     '''
     查询用户当前时刻的账户的一些基本信息

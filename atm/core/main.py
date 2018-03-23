@@ -99,7 +99,12 @@ def interactionWithUserAccout(userAccount):
 ########################### 用户的一些交互的行为 #####################################
 
 def showUserAccountInfo(userAccountData):
-
+    '''
+    展示用户的个人信息
+    :param userAccountData: 用户的账户信息
+    '''
+    currentUserBasicInfo = accountsInfo.checkUserCurrentBasicInfo(userAccountData['userID'])
+    userData['userData'] = currentUserBasicInfo
     print("\033[32;1m---------User info----------------\033[0m")
     for (key, value) in userData.items():
         if key == 'userData':
@@ -171,6 +176,10 @@ def withdrawingMoney(userAccountData):
 
 @loginAuthentic
 def transferWithAccout(userAccountData):
+    '''
+    转账给目标账户的逻辑
+    :param userAccountData: 用户的账户信息
+    '''
     currentUserBasicInfo = accountsInfo.checkUserCurrentBasicInfo(userAccountData['userID'])
     currentMoney = '''
             \033[32;1m_________________ basic info ________________________
