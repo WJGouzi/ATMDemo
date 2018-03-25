@@ -1,0 +1,5 @@
+2018-03-25 12:28:24,135 - transaction - INFO - account:1234   action:withdraw    amount:1002.0   interest:50.1  balance:22067.12
+2018-03-25 12:29:11,246 - transaction - INFO - account:1234   action:transfer    amount:100.0 recieveAccount:5678  interest:0  balance:21967.12
+2018-03-25 12:30:05,799 - transaction - INFO - account:1234   action:repay    amount:10000.0   interest:0.0  balance:31967.12
+2018-03-25 12:30:16,215 - transaction - INFO - account:1234   action:withdraw    amount:3333.0   interest:166.65  balance:28467.469999999998
+2018-03-25 12:30:29,667 - transaction - INFO - account:1234   action:transfer    amount:1234.0 recieveAccount:5678  interest:61.7  balance:27171.769999999997
