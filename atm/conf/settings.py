@@ -27,6 +27,7 @@
 
 import os
 import sys
+import logging
 
 basePath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 print(basePath)
@@ -46,3 +47,11 @@ TRANSACTION_TYPE = {
     'transfer': {'action': 'minus', 'interest': 0.05},  # 转账
     'consume': {'action': 'minus', 'interest': 0},      # 消费
 }
+
+
+LOGGINGTYPE = {
+    'access': 'access.log',
+    'transaction': 'transaction.log'
+}
+
+LOGGINGLEVEL = logging.INFO

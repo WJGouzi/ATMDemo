@@ -29,7 +29,7 @@ from core.auth import loginAuthentic
 from core import  accountsInfo
 from core import transaction
 from core import dbHandler
-
+from core import logger
 
 '''
 用户的信息
@@ -41,6 +41,11 @@ userData = {
     'isAuthentic' : False    # 用户是否验证通过
 }
 
+'''
+日志打印的对象
+'''
+transactionLogger = logger.loggerAction('transaction')
+accessLogger = logger.loggerAction('access')
 
 
 def userLoginAction():
@@ -136,7 +141,7 @@ def repay(userAccountData):
             '''
             输入金额有效
             '''
-            newUserInfo = transaction.transactionAction(currentUserBasicInfo, 'repay', repayMoney)
+            newUserInfo = transaction.transactionAction(transactionLogger, currentUserBasicInfo, 'repay', repayMoney)
             if newUserInfo:
                 print('''\033[32;1m现在账户的余额为:%.2f\033[0m''' % float(newUserInfo['balance']))
         elif repayMoney == 'b':
@@ -165,7 +170,7 @@ def withdrawingMoney(userAccountData):
             '''
             输入的金额是有效的
             '''
-            newUserInfo = transaction.transactionAction(currentUserBasicInfo, 'withdraw', withdrawMoney)
+            newUserInfo = transaction.transactionAction(transactionLogger, currentUserBasicInfo, 'withdraw', withdrawMoney)
             if newUserInfo:
                 print('''\033[32;1m现在账户的余额为:%.2f\033[0m''' % float(newUserInfo['balance']))
         elif withdrawMoney == 'b':
@@ -193,7 +198,7 @@ def transferWithAccout(userAccountData):
     if len(otherUserID) > 0 and otherUserID.isdigit():
         transferMoney = input('''\033[32;1m请输入转账的金额:\033[0m''').strip()
         if len(transferMoney) > 0 and (transferMoney.isdigit() or isJudgeFloat(transferMoney)):
-            newUserInfo = transaction.transactionAction(currentUserBasicInfo, 'transfer', transferMoney, **otherData)
+            newUserInfo = transaction.transactionAction(transactionLogger, currentUserBasicInfo, 'transfer', transferMoney, **otherData)
             if newUserInfo:
                 print('''\033[32;1m现在账户的余额为:%.2f\033[0m''' % float(newUserInfo['balance']))
             else:

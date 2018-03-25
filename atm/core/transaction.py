@@ -29,7 +29,7 @@ from core import accountsInfo
 
 
 
-def transactionAction(userData, dealType, amount, **kwargs):
+def transactionAction(loggerObject, userData, dealType, amount, **kwargs):
     '''
     关于交易相关的逻辑处理
     :param userData: 用户的信息
@@ -63,6 +63,15 @@ def transactionAction(userData, dealType, amount, **kwargs):
 
         userData['balance'] = newMoneyAmount
         accountsInfo.updateUserCurrentBasicInfo(userData)
+        if dealType == 'transfer' and kwargs:
+            '''
+            如果是转账的情况则需要将转账对象的账号添加到日志中
+            '''
+            loggerObject.info("account:%s   action:%s    amount:%s recieveAccount:%s  interest:%s  balance:%s" %
+                              (userData['id'], dealType, amount, kwargs['id'], interest, newMoneyAmount))
+        else:
+            loggerObject.info("account:%s   action:%s    amount:%s   interest:%s  balance:%s" %
+                              (userData['id'], dealType, amount, interest, newMoneyAmount))
         return userData
     else:
         print("\033[31;1m交易类型 : [%s] 不存在!\033[0m" % dealType)
